@@ -1,26 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, {useEffect, useState} from 'react';
 import './App.css';
+import Header from "./Header";
+import ProductList from "./ProductList";
+import ShoppingCart from "./ShoppingList";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+
+function App({products, shoppingCartStore}) {
+
+    const [cart, setCart] = useState({list: []})
+
+    useEffect(subscribeToStore, [])
+
+    function subscribeToStore() {
+        shoppingCartStore.onChange(reload)
+
+        return function cleanup() {
+            shoppingCartStore.offChange()
+        }
+    }
+
+    function reload() {
+        const cart = shoppingCartStore.get()
+        setCart(cart)
+    }
+    
+    return (
+        <div className="App">
+            <Header/>
+            <div className="content">
+                <ProductList products={products} onAddClick={shoppingCartStore.addToCart}/>
+                <ShoppingCart cart={cart} onRemoveClick={shoppingCartStore.removeFromCart}/>
+            </div>
+        </div>
+    );
 }
 
 export default App;
